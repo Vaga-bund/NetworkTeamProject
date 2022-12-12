@@ -59,7 +59,6 @@ public class PlayerMove : MonoBehaviourPun
         GameManager.Instance.diceNumPanel.SetActive(false);
         while (GameManager.Instance.diceNumber > 0)
         {
-            Debug.Log("¿Ãµø");
             curPos++;
             curPos %= GameManager.Instance.board_area.Count;
 

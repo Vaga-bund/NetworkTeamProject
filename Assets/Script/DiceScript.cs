@@ -41,7 +41,7 @@ public class DiceScript : MonoBehaviour {
         GameManager.Instance.diceNumPanel.SetActive(true);
         if (PrintDiceCount == 1)
         {
-            int DiceRandomNum = Random.Range(1, 6);
+            int DiceRandomNum = Random.Range(1, 7);
 
             switch (DiceRandomNum)
             {
