@@ -12,7 +12,7 @@ public class CountdownController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        countdownTime = 3;
+        countdownTime = 1;
 
         StartCoroutine(CountdownToStart());
     }

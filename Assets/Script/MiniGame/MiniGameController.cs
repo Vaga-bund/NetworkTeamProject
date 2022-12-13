@@ -55,6 +55,5 @@ public class MiniGameController
     public void StartMiniGame()
     {
         MinigameEvent.Invoke();
-        Debug.Log("Start");
     }
 }
