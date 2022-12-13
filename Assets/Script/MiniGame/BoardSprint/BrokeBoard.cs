@@ -4,18 +4,27 @@ using UnityEngine;
 
 public class BrokeBoard : MonoBehaviour
 {
-    private Renderer boardColor;
+
+    private MeshRenderer boardMesh;
+
+    Material[] materials;
     // Start is called before the first frame update
     void Start()
     {
-        boardColor = gameObject.GetComponent<Renderer>();
+        boardMesh = gameObject.GetComponent<MeshRenderer>();
+        materials = boardMesh.GetComponent<Renderer>().materials;
+
+
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if(collision.gameObject.CompareTag("Player"))
         {
-            boardColor.material.color = Color.yellow;
+
+            boardMesh.material = materials[1];
+
+
             Destroy(this.gameObject, 5.0f);
         }
     }

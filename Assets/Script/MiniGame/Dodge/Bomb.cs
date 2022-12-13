@@ -9,7 +9,11 @@ public class Bomb : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         GameObject instantBomb = Instantiate(explosionBomb, this.gameObject.transform.position, Quaternion.identity);
-        instantBomb.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+
+        if (collision.gameObject.tag == "Player")
+            collision.gameObject.SetActive(false);
+        
+
         Destroy(instantBomb.gameObject, 1.0f);
 
         Destroy(this.gameObject);

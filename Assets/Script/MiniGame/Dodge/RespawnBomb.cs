@@ -1,16 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RespawnBomb : MonoBehaviour
 {
     [Header("RespawnPoints")]
     [SerializeField] private GameObject rangeObject;
     [SerializeField] private BoxCollider rangeCollider;
+
     [Header("Bombs")]
     [SerializeField] private GameObject bombs;
 
     private void Start()
+    {
+        //var minigameController = FindObjectOfType<MiniGameController>();
+        MiniGameController.Instance.MinigameEvent.AddListener(StartRespawn);
+        //minigameController.MinigameEvent.AddListener(StartRespawn);
+    }
+
+    public void StartRespawn()
     {
         StartCoroutine(RandomRespawn_Coroutine());
     }
@@ -39,5 +48,13 @@ public class RespawnBomb : MonoBehaviour
 
         Vector3 respawnPosition = originPosition + RandomPostion;
         return respawnPosition;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha0))
+        {
+            SceneManager.LoadScene("MinigameSprint");
+        }
     }
 }
