@@ -82,7 +82,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public Text[] chatText;
     public Text roomInfoText;
     public Button[] gameStart_ReadyBtn;
-    public Toggle[] playerCount;
+    public Toggle[] playerCountToggle;
 
 
     private void Awake()
@@ -215,12 +215,12 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         mainMenuPanel.SetActive(false);
         mainLobbyPanel.SetActive(true);
+        myList.Clear();
         PhotonNetwork.JoinLobby();
     }
 
     public override void OnJoinedLobby()
     {
-        myList.Clear();
         CheckLobbyPlayerCount();
         joinLobbyState = "로비 접속 성공";
         Debug.Log("?");
@@ -304,6 +304,8 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void openCreateroomPanel()
     {
         roomCreatePanel.SetActive(true);
+        playerNum = 1;
+
         playerNumText.text = playerNum.ToString();
         roomNameInput.text = "";
 
@@ -345,15 +347,20 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         if (joinInfoText)
             joinInfoText.text = joinLobbyState;
 
-        if (master())
+        //if (master())
+        //{
+        //    int max = PhotonNetwork.CurrentRoom.MaxPlayers - 1;
+        //    PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
+        //    {
+        //        { "0", PhotonNetwork.LocalPlayer.ActorNumber }, { "1", 0 }, { "2", 2<= max ? 0 : -1 },
+        //        { "3", 2<= max ? 0 : -1 }, { "4", 2<= max ? 0 : -1 }, { "5", 2<= max ? 0 : -1 },
+        //        { "6", 2<= max ? 0 : -1 }, { "7", 2<= max ? 0 : -1 }
+        //    });
+        //}
+
+        if( master())
         {
-            int max = PhotonNetwork.CurrentRoom.MaxPlayers - 1;
-            PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable
-            {
-                { "0", PhotonNetwork.LocalPlayer.ActorNumber }, { "1", 0 }, { "2", 2<= max ? 0 : -1 },
-                { "3", 2<= max ? 0 : -1 }, { "4", 2<= max ? 0 : -1 }, { "5", 2<= max ? 0 : -1 },
-                { "6", 2<= max ? 0 : -1 }, { "7", 2<= max ? 0 : -1 }
-            });
+            Debug.Log("방장입장");
         }
         RoomRenewal();
         chatInput.text = "";
@@ -374,8 +381,10 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     {
         RoomRenewal();
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
-    }
+        PhotonNetwork.SetMasterClient(PhotonNetwork.PlayerList[0]);
+        PhotonNetwork.SendAllOutgoingCommands();
 
+    }
     public void JoinRandomRoom() => PhotonNetwork.JoinRandomRoom();
 
     public void LeaveRoom()
@@ -393,24 +402,26 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     void RoomRenewal()
     {
-        for (int i = 0; i < playerCount.Length; i++)
+        for (int i = 0; i < playerCountToggle.Length; i++)
         {
-            playerCount[i].transform.GetChild(1).GetComponent<Text>().text = "";
+            playerCountToggle[i].transform.GetChild(1).GetComponent<Text>().text = "";
         }
 
         for (int i = 0; i < PhotonNetwork.PlayerList.Length; i++)
         {
-            playerCount[i].transform.GetChild(1).GetComponent<Text>().text = PhotonNetwork.PlayerList[i].NickName;
+            playerCountToggle[i].transform.GetChild(1).GetComponent<Text>().text = PhotonNetwork.PlayerList[i].NickName;
         }
 
         if (master())
         {
+            gameStart_ReadyBtn[0].gameObject.SetActive(true);
             gameStart_ReadyBtn[1].gameObject.SetActive(false);
             gameStart_ReadyBtn[0].interactable = true;
         }
         else
         {
             gameStart_ReadyBtn[0].gameObject.SetActive(false);
+            gameStart_ReadyBtn[1].gameObject.SetActive(true);
             gameStart_ReadyBtn[1].interactable = true;
         }
 
@@ -419,15 +430,22 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
     // 서버 끊기, 로비나가기
     public void Disconnect() => PhotonNetwork.Disconnect();
+    #endregion
 
-    //방장 넘겨주기
-    public override void OnMasterClientSwitched(Player newMasterClient)
+    #region 준비
+    public void Ready()
     {
-        base.OnMasterClientSwitched(newMasterClient);
-        PhotonNetwork.SetMasterClient(PhotonNetwork.PlayerList[0]);
+        int i = 0;
+        if (!master())
+        {
+            playerCountToggle[i].isOn = true;
+        }
     }
 
 
+    #endregion
+
+    #region 게임시작
     public void InitGame()
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount != playerNum) return;
