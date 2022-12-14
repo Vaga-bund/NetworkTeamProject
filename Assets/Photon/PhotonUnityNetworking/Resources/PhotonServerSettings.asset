@@ -47,6 +47,15 @@ MonoBehaviour:
   - ReadyRPC
   - SpawnPlayer
   - PlayerMoveRPC
+  - ApplyUpdateHealth
+  - OnDamage
+  - Open_BoardSprint_MiniGame
+  - Open_DodgeBomb_MiniGame
+  - OpenMainGame
+  - OpenSlotMachine
+  - RespawnPlayer
+  - StartAllEvent
+  - StartRespawn
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
