@@ -11,9 +11,10 @@ public class Bomb : MonoBehaviour
         GameObject instantBomb = Instantiate(explosionBomb, this.gameObject.transform.position, Quaternion.identity);
 
         if (collision.gameObject.tag == "Player")
-            collision.gameObject.SetActive(false);
+        {
+            collision.gameObject.GetComponent<MiniGamePlayer>().OnDamage(1);
+        }
         
-
         Destroy(instantBomb.gameObject, 1.0f);
 
         Destroy(this.gameObject);

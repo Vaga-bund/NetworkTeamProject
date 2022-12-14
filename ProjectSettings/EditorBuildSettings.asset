@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Minigame/MinigameSprint.unity
     guid: a48bf1801395f064bb68fc898a48f3a8
+  - enabled: 1
+    path: Assets/Scenes/Minigame/MinigameDodge.unity
+    guid: fcdfd80007bc42248b211331efcc7771
   m_configObjects: {}

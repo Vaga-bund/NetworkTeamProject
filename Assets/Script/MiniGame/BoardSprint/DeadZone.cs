@@ -8,7 +8,7 @@ public class DeadZone : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            collision.gameObject.SetActive(false);
+            collision.gameObject.GetComponent<MiniGamePlayer>().OnDamage(1);
         }
     }
 }

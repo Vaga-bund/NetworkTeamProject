@@ -22,7 +22,7 @@ public class MiniGamePlayer : MonoBehaviourPun, IPunObservable
     string name = "";
 
     private bool isDie = false;
-    private int hp = 100;
+    private int hp = 1;
     private float respawnTime = 3.0f;
 
     // Start is called before the first frame update
@@ -109,7 +109,7 @@ public class MiniGamePlayer : MonoBehaviourPun, IPunObservable
     }
 
     [PunRPC]
-    void OnDamage(int damage)
+    public void OnDamage(int damage)
     {
         if (PhotonNetwork.IsMasterClient)
         {
@@ -122,12 +122,19 @@ public class MiniGamePlayer : MonoBehaviourPun, IPunObservable
         if (hp <= 0)
         {
             //animator.SetTrigger("Die");
-            StartCoroutine(RespawnPlayer(respawnTime));
+            //StartCoroutine(RespawnPlayer(respawnTime));
+            pv.RPC("OpenMainGame", RpcTarget.AllViaServer);
         }
         else
         {
             //animator.SetTrigger("Hit");
         }
+    }
+
+    [PunRPC]
+    private void OpenMainGame()
+    {
+        PhotonNetwork.LoadLevel("MainGameScene");
     }
 
     [PunRPC]
@@ -150,7 +157,7 @@ public class MiniGamePlayer : MonoBehaviourPun, IPunObservable
 
         tr.position = new Vector3(Random.Range(-20.0f, 20.0f), 0.0f, Random.Range(-20.0f, 20.0f));
 
-        hp = 100;
+        hp = 1;
         isDie = false;
         //animator.SetTrigger("Reset");
         StartCoroutine(PlayerVisible(true, 1.0f));

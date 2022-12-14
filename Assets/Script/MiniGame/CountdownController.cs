@@ -12,7 +12,7 @@ public class CountdownController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        countdownTime = 1;
+        countdownTime = 3;
 
         StartCoroutine(CountdownToStart());
     }
@@ -34,5 +34,7 @@ public class CountdownController : MonoBehaviour
 
         countdownDisplay.gameObject.SetActive(false);
         MiniGameController.Instance.StartMiniGame();
+
+        yield return null;
     }
 }

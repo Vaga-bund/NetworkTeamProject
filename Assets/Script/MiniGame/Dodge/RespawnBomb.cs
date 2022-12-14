@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,13 +13,29 @@ public class RespawnBomb : MonoBehaviour
     [Header("Bombs")]
     [SerializeField] private GameObject bombs;
 
+    PhotonView pv;
+
+    private void Awake()
+    {
+        pv = GetComponent<PhotonView>();
+    }
+
     private void Start()
     {
         //var minigameController = FindObjectOfType<MiniGameController>();
-        MiniGameController.Instance.MinigameEvent.AddListener(StartRespawn);
+        if (pv.IsMine)
+        {
+            MiniGameController.Instance.MinigameEvent.AddListener(StartRespawn);
+        }
+        else
+        {
+            MiniGameController.Instance.MinigameEvent.AddListener(StartRespawn);
+
+        }
         //minigameController.MinigameEvent.AddListener(StartRespawn);
     }
 
+    [PunRPC]
     public void StartRespawn()
     {
         StartCoroutine(RandomRespawn_Coroutine());
@@ -30,7 +47,7 @@ public class RespawnBomb : MonoBehaviour
         {
             yield return new WaitForSeconds(1.0f);
 
-            GameObject instantBomb = Instantiate(bombs, Return_RandomPosition(), Quaternion.identity);
+            GameObject instantBomb = PhotonNetwork.Instantiate("BombSample", Return_RandomPosition(), Quaternion.identity);
         }
     }
 

@@ -6,24 +6,48 @@ using UnityEngine.SceneManagement;
 
 public class Test : MonoBehaviourPun
 {
+    PhotonView pv;
+    public SlotMachineMgr slotMachineMgr;
+
+    private void Awake()
+    {
+        pv = GetComponent<PhotonView>();
+
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            InitGameRPC();
+            pv.RPC("Open_BoardSprint_MiniGame", RpcTarget.AllViaServer);
         }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            pv.RPC("Open_DodgeBomb_MiniGame", RpcTarget.AllViaServer);
+        }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            pv.RPC("OpenSlotMachine", RpcTarget.All);
+
+        }
+
     }
 
     [PunRPC]
-    public void InitGameRPC()
+    public void Open_BoardSprint_MiniGame()
     {
-        for (int i = 0; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
-        {
-            if (PhotonNetwork.PlayerList[i] == PhotonNetwork.LocalPlayer)
-            {
+        PhotonNetwork.LoadLevel("MinigameSprint");
+    }
+    
+    [PunRPC]
+    public void Open_DodgeBomb_MiniGame()
+    {
+        PhotonNetwork.LoadLevel("MinigameDodge");
+    }
 
-            }
-        }
-        PhotonNetwork.LoadLevel("MiniGameSprint");
+    [PunRPC]
+    public void OpenSlotMachine()
+    {
+        slotMachineMgr.slotActive(true);
     }
 }

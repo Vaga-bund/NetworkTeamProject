@@ -5,31 +5,46 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
-public class SprintBoard : MonoBehaviourPunCallbacks
+public class SpawnPlayer : MonoBehaviourPunCallbacks
 {
-    PhotonView myPV;
-
-    public GameObject player;
-
+    PhotonView pv;
 
     private void Awake()
     {
-        myPV = GetComponent<PhotonView>();
+        pv = GetComponent<PhotonView>();
     }
 
     private void Start()
     {
 
-        if(myPV.IsMine)
+        if(pv.IsMine)
         {
             //RespawnPlayer();
+            //pv.RPC("RespawnPlayer", RpcTarget.All);
+            MiniGameController.Instance.MinigameEvent.AddListener(RespawnPlayer);
+        }
+        else
+        {
+            //pv.RPC("RespawnPlayer", RpcTarget.All);
             MiniGameController.Instance.MinigameEvent.AddListener(RespawnPlayer);
         }
     }
 
+    [PunRPC]
     void RespawnPlayer()
     {
-        player = PhotonNetwork.Instantiate("PlayerSample", Return_PlayerRandomPos(), Quaternion.identity, 0);
+        GameObject player = PhotonNetwork.Instantiate("PlayerSample", Return_PlayerRandomPos(), Quaternion.identity, 0);
+        //StartCoroutine(CreatePlayer());
+    }
+
+    IEnumerator CreatePlayer()
+    {
+        GameObject tempPlayer = PhotonNetwork.Instantiate("PlayerSample",
+                                    Return_PlayerRandomPos(),
+                                    Quaternion.identity,
+                                    0);
+
+        yield return null;
     }
 
     Vector3 Return_PlayerRandomPos()

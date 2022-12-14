@@ -27,19 +27,21 @@ public class PlayerMove : MonoBehaviourPun
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && GameManager.Instance.inventoryOpen == false)
-        {
-            GameManager.Instance.inventoryOpen = true;
-            GameManager.Instance.InventoryPanel.gameObject.SetActive(true);
-            dice.gameObject.SetActive(false);
-        }
-        else if (Input.GetKeyDown(KeyCode.Space) && GameManager.Instance.inventoryOpen == true)
-        {
-            GameManager.Instance.inventoryOpen = false;
-            GameManager.Instance.InventoryPanel.gameObject.SetActive(false);
-            dice.gameObject.SetActive(true);
-        }
-        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0)) && dice.isThrowDice == false && GameManager.Instance.inventoryOpen == false)
+        ////if (Input.GetKeyDown(KeyCode.Space) && GameManager.Instance.inventoryOpen == false)
+        ////if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        ////    GameManager.Instance.inventoryOpen = true;
+        ////    GameManager.Instance.InventoryPanel.gameObject.SetActive(true);
+        ////    dice.gameObject.SetActive(false);
+        //}
+        ////else if (Input.GetKeyDown(KeyCode.Space) && GameManager.Instance.inventoryOpen == true)
+        ////else if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        ////    GameManager.Instance.inventoryOpen = false;
+        ////    GameManager.Instance.InventoryPanel.gameObject.SetActive(false);
+        ////    dice.gameObject.SetActive(true);
+        //}
+        if ((Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButtonDown(0)) && dice.isThrowDice == false)
         {
             rb.AddForce(Vector3.up * 120);
             dice.ThrowDice();
