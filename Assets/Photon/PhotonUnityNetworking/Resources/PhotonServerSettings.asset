@@ -43,18 +43,10 @@ MonoBehaviour:
   - MasterReceiveRPC
   - OtherReceiveRPC
   - InitGameRPC
-  - ApplyUpdateHealth
-  - OnDamage
-  - StartMiniGame
-  - RespawnPlayer
-  - StartAllEvent
-  - OpenMiniGame
-  - OpenMainGame
-  - OpenSlotMachine
-  - Open_BoardSprint_MiniGame
-  - Open_DodgeBomb_MiniGame
-  - StartSlotMachine
-  - StartRespawn
+  - leaderCheck
+  - ReadyRPC
+  - SpawnPlayer
+  - PlayerMoveRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

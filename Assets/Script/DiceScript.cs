@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 public class DiceScript : MonoBehaviour {
 
@@ -9,10 +10,19 @@ public class DiceScript : MonoBehaviour {
 	public bool isThrowDice = false;
     public int PrintDiceCount = 0;
 
+    private PhotonView PV;
     // Use this for initialization
     void Start () {
-		rb = GetComponent<Rigidbody> ();
-        StartCoroutine(Dice());
+        PV = GetComponent<PhotonView>();
+        rb = GetComponent<Rigidbody> ();
+        if (PV.IsMine)
+        {
+            StartCoroutine(Dice());
+        }
+        else
+        {
+            StartCoroutine(Dice());
+        }
     }
 
     // Update is called once per frame
