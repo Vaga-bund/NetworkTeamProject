@@ -19,14 +19,15 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public PhotonView PV;
 
     #region 닉네임, 접속관련 string / bool
-    string playerName = "";
+    public string playerName = "";
 
-    bool isGameStart = false;
-    bool isLoggin = false;
-    bool isReady = false;
+    public bool isGameStart = false;
+    public bool isLoggin = false;
+    public bool isReady = false;
 
     int playerNum = 1;
     int myNum = 0;
+    int readyCount = 1;
 
     List<RoomInfo> myList = new List<RoomInfo>();
     int currentPage = 1, maxPage, multiple;
@@ -101,6 +102,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         {
             joinInfoText.text = PhotonNetwork.NetworkClientState.ToString();
         }
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
     }
     public static NetworkManager Instance
     {
@@ -127,6 +138,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     void Update()
     {
         CheckLobbyPlayerCount();
+
     }
 
     public override void OnConnectedToMaster() => isReady = true;
@@ -184,13 +196,13 @@ public class NetworkManager : MonoBehaviourPunCallbacks
             }
             else
             {
-                jnickNameCheckState = "닉네임이 설정되었습니다.\n잠시만 기다려주세요";
+                jnickNameCheckState = "닉네임이 설정되었습니다.";
+                isGameStart = true;
                 nickNameCheck.text = jnickNameCheckState;
                 nickNameCheck.color = Color.blue;
                 playerName = nickNameInputField.text;
                 PhotonNetwork.LocalPlayer.NickName = playerName;
                 nickNameInputField.text = string.Empty;
-                //Debug.Log("connect 시도!" + isGameStart + ", " + isLoggin);
                 PhotonNetwork.ConnectUsingSettings();
                 OnConnectedToMaster();
                 OpenMainMenu();
@@ -383,6 +395,24 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         ChatRPC("<color=yellow>" + otherPlayer.NickName + "님이 퇴장하셨습니다</color>");
         PhotonNetwork.SetMasterClient(PhotonNetwork.PlayerList[0]);
         PhotonNetwork.SendAllOutgoingCommands();
+        if (readyCount == PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            playerCountToggle[readyCount].isOn = false;
+            readyCount--;
+            if (readyCount <= 0)
+            {
+                readyCount = 1;
+            }
+        }
+        if(readyCount < PhotonNetwork.CurrentRoom.PlayerCount)
+        {
+            playerCountToggle[readyCount].isOn = false;
+            readyCount--;
+            if (readyCount <= 0)
+            {
+                readyCount = 1;
+            }
+        }
 
     }
     public void JoinRandomRoom() => PhotonNetwork.JoinRandomRoom();
@@ -394,10 +424,17 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         mainLobbyPanel.SetActive(true);
         MyListRenewal();
         RoomRenewal();
+        
         OnJoinedLobby();
         joinLobbyState = "로비 접속 성공";
         if (joinInfoText)
             joinInfoText.text = joinLobbyState;
+    }
+
+    [PunRPC]
+    public void leaderCheck()
+    {
+        playerCountToggle[0].isOn = true;
     }
 
     void RoomRenewal()
@@ -414,6 +451,7 @@ public class NetworkManager : MonoBehaviourPunCallbacks
 
         if (master())
         {
+            PV.RPC("leaderCheck", RpcTarget.AllBufferedViaServer);
             gameStart_ReadyBtn[0].gameObject.SetActive(true);
             gameStart_ReadyBtn[1].gameObject.SetActive(false);
             gameStart_ReadyBtn[0].interactable = true;
@@ -435,11 +473,42 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     #region 준비
     public void Ready()
     {
-        int i = 0;
-        if (!master())
+        PV.RPC("ReadyRPC", RpcTarget.AllViaServer);
+    }
+
+    [PunRPC]
+    public void ReadyRPC()
+    {
+        if (PhotonNetwork.CurrentRoom.PlayerCount != playerNum)
         {
-            playerCountToggle[i].isOn = true;
+            if (!master())
+            {
+                if (readyCount < PhotonNetwork.CurrentRoom.PlayerCount)
+                {
+                    Debug.Log(readyCount);
+                    playerCountToggle[readyCount].isOn = true;
+                    Debug.Log("준비");
+                }
+            }
+            else if (PV.IsMine)
+            {
+                playerCountToggle[readyCount].isOn = true;
+            }
+            readyCount++;
+            if (readyCount == PhotonNetwork.CurrentRoom.PlayerCount)
+            {
+                readyCount--;
+                Debug.Log("d");
+            }
+
         }
+        else
+        {
+            playerCountToggle[readyCount].isOn = true;
+            readyCount++;
+
+        }
+        //PhotonNetwork.player
     }
 
 
@@ -449,8 +518,16 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public void InitGame()
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount != playerNum) return;
-
-        PV.RPC("InitGameRPC", RpcTarget.AllViaServer);
+        for (int i = 1; i < PhotonNetwork.CurrentRoom.PlayerCount; i++)
+        {
+            if (playerCountToggle[i].isOn)
+            {
+                if (readyCount == PhotonNetwork.CurrentRoom.PlayerCount)
+                {
+                    PV.RPC("InitGameRPC", RpcTarget.All);
+                }
+            }
+        }
     }
 
     [PunRPC]
